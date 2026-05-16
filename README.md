@@ -39,3 +39,4 @@ Admin validity controls:
 - Editing a package keeps expiry unchanged unless the Validity value is changed or days are added/removed.
 - Admin Menu shows one section at a time: Feature Management, Active Package List, Package Management, Subscription Days, or Admin Contact.
 - Package Validity includes Permanent / Unlimited. Permanent users show Infinite Days and never expire until the admin changes the package validity.
+- Mobile admin view keeps one section visible at a time, and per-package day controls are full-width for phone screens.

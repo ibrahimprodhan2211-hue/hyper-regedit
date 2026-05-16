@@ -339,6 +339,10 @@ function cleanAccessValue(value) {
   return text && text.toLowerCase() !== "undefined" ? text : "";
 }
 
+function isPermanentValidity(value) {
+  return ["permanent", "unlimited", "infinite", "lifetime"].includes(String(value || "").trim().toLowerCase());
+}
+
 function packageUsernameMatches(pkg, username) {
   const input = String(username || "").trim().toLowerCase();
   const candidates = [pkg.username, makeDefaultUsername(pkg), pkg.name, pkg.id]
@@ -383,18 +387,22 @@ function normalizeData(data) {
       status: feature.status || "Active"
     })),
     userFeatureStates: hasDeactivatedFeatureDefaults ? data.userFeatureStates || {} : {},
-    packages: (data.packages || defaults.packages).map((pkg) => ({
-      ...pkg,
-      username: cleanAccessValue(pkg.username) || makeDefaultUsername(pkg),
-      password: cleanAccessValue(pkg.password),
-      featureIds: Array.isArray(pkg.featureIds) ? pkg.featureIds : [],
-      deviceName: pkg.deviceName || "Registered Device",
-      legalInfo: pkg.legalInfo || "Legal and regulatory access details are assigned by the admin.",
-      packageDetails: pkg.packageDetails || "Package details are assigned by the admin.",
-      loadingMinutes: getFinalLoadingMinutes(pkg),
-      customDays: pkg.validityType === "permanent" ? 0 : pkg.customDays,
-      expiresAt: pkg.validityType === "permanent" ? null : pkg.expiresAt
-    }))
+    packages: (data.packages || defaults.packages).map((pkg) => {
+      const permanent = isPermanentValidity(pkg.validityType);
+      return {
+        ...pkg,
+        validityType: permanent ? "permanent" : pkg.validityType,
+        username: cleanAccessValue(pkg.username) || makeDefaultUsername(pkg),
+        password: cleanAccessValue(pkg.password),
+        featureIds: Array.isArray(pkg.featureIds) ? pkg.featureIds : [],
+        deviceName: pkg.deviceName || "Registered Device",
+        legalInfo: pkg.legalInfo || "Legal and regulatory access details are assigned by the admin.",
+        packageDetails: pkg.packageDetails || "Package details are assigned by the admin.",
+        loadingMinutes: getFinalLoadingMinutes(pkg),
+        customDays: permanent ? 0 : pkg.customDays,
+        expiresAt: permanent ? null : pkg.expiresAt
+      };
+    })
   };
 }
 
@@ -638,7 +646,7 @@ function getActivePackage() {
 }
 
 function isPermanentPackage(pkg) {
-  return pkg?.validityType === "permanent";
+  return isPermanentValidity(pkg?.validityType);
 }
 
 function getValidityDays(pkg) {

@@ -204,6 +204,10 @@ function cleanAccessValue(value) {
   return text && text.toLowerCase() !== "undefined" ? text : "";
 }
 
+function isPermanentValidity(value) {
+  return ["permanent", "unlimited", "infinite", "lifetime"].includes(String(value || "").trim().toLowerCase());
+}
+
 function packageUsernameMatches(pkg = {}, username = "") {
   const input = String(username || "").trim().toLowerCase();
   const candidates = [pkg.username, makeDefaultUsername(pkg), pkg.name, pkg.id]
@@ -240,20 +244,24 @@ function normalizeData(data = {}) {
       icon: feature.icon || String(feature.name || "FT").slice(0, 2).toUpperCase(),
       image: feature.image || ""
     })),
-    packages: (data.packages || defaults.packages).map((pkg) => ({
-      ...pkg,
-      username: cleanAccessValue(pkg.username) || makeDefaultUsername(pkg),
-      password: cleanAccessValue(pkg.password),
-      featureIds: Array.isArray(pkg.featureIds) ? pkg.featureIds : [],
-      deviceName: pkg.deviceName || "Registered Device",
-      legalInfo: pkg.legalInfo || "Legal and regulatory access details are assigned by the admin.",
-      packageDetails: pkg.packageDetails || "Package details are assigned by the admin.",
-      loadingMinutes: getFinalLoadingMinutes(pkg),
-      customDays: pkg.validityType === "permanent" ? 0 : pkg.customDays,
-      expiresAt: pkg.validityType === "permanent" ? null : pkg.expiresAt,
-      deviceLockId: pkg.deviceLockId || "",
-      deviceLockedAt: pkg.deviceLockedAt || null
-    }))
+    packages: (data.packages || defaults.packages).map((pkg) => {
+      const permanent = isPermanentValidity(pkg.validityType);
+      return {
+        ...pkg,
+        validityType: permanent ? "permanent" : pkg.validityType,
+        username: cleanAccessValue(pkg.username) || makeDefaultUsername(pkg),
+        password: cleanAccessValue(pkg.password),
+        featureIds: Array.isArray(pkg.featureIds) ? pkg.featureIds : [],
+        deviceName: pkg.deviceName || "Registered Device",
+        legalInfo: pkg.legalInfo || "Legal and regulatory access details are assigned by the admin.",
+        packageDetails: pkg.packageDetails || "Package details are assigned by the admin.",
+        loadingMinutes: getFinalLoadingMinutes(pkg),
+        customDays: permanent ? 0 : pkg.customDays,
+        expiresAt: permanent ? null : pkg.expiresAt,
+        deviceLockId: pkg.deviceLockId || "",
+        deviceLockedAt: pkg.deviceLockedAt || null
+      };
+    })
   };
 }
 
@@ -388,7 +396,7 @@ function userFeaturesForPackage(data, pkg) {
 }
 
 function isPermanentPackage(pkg) {
-  return pkg?.validityType === "permanent";
+  return isPermanentValidity(pkg?.validityType);
 }
 
 function isExpired(pkg) {

@@ -2107,11 +2107,11 @@ button.is-loading::before {
 }
 
 .view.active#adminView .admin-section-panel {
-  display: none;
+  display: none !important;
 }
 
 .view.active#adminView .admin-section-panel.is-active {
-  display: block;
+  display: block !important;
   animation: adminSectionIn 220ms ease-out both;
 }
 
@@ -2268,6 +2268,12 @@ button.is-loading::before {
   padding: 3px 6px;
   border-radius: 6px;
   font-size: 0.82rem;
+}
+
+.inline-day-control input:disabled,
+.list-actions button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .stacked-form {
@@ -2511,6 +2517,33 @@ button.is-loading::before {
   .copy-row,
   .access-row {
     display: grid;
+  }
+
+  .view.active#adminView .admin-section-panel {
+    display: none !important;
+  }
+
+  .view.active#adminView .admin-section-panel.is-active {
+    display: block !important;
+  }
+
+  .list-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .list-actions button,
+  .inline-day-control {
+    width: 100%;
+  }
+
+  .inline-day-control {
+    justify-content: space-between;
+  }
+
+  .inline-day-control input {
+    width: 104px;
   }
 
   .primary-button,
