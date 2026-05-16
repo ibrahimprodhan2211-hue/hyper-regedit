@@ -249,6 +249,8 @@ function normalizeData(data = {}) {
       legalInfo: pkg.legalInfo || "Legal and regulatory access details are assigned by the admin.",
       packageDetails: pkg.packageDetails || "Package details are assigned by the admin.",
       loadingMinutes: getFinalLoadingMinutes(pkg),
+      customDays: pkg.validityType === "permanent" ? 0 : pkg.customDays,
+      expiresAt: pkg.validityType === "permanent" ? null : pkg.expiresAt,
       deviceLockId: pkg.deviceLockId || "",
       deviceLockedAt: pkg.deviceLockedAt || null
     }))
@@ -385,7 +387,14 @@ function userFeaturesForPackage(data, pkg) {
     }));
 }
 
+function isPermanentPackage(pkg) {
+  return pkg?.validityType === "permanent";
+}
+
 function isExpired(pkg) {
+  if (isPermanentPackage(pkg)) {
+    return false;
+  }
   return Date.now() > Number(pkg.expiresAt);
 }
 

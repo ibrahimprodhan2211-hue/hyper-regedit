@@ -36,6 +36,7 @@ let adminAuthenticated = false;
 let adminToken = sessionStorage.getItem(ADMIN_TOKEN_KEY) || "";
 let backendOnline = false;
 let saveQueue = Promise.resolve();
+let activeAdminSectionId = "featureManagementSection";
 
 const elements = {
   userView: $("#userView"),
@@ -111,6 +112,8 @@ const elements = {
   adminSettingsMessage: $("#adminSettingsMessage"),
   adminLogoutButton: $("#adminLogoutButton"),
   resetDemoButton: $("#resetDemoButton"),
+  adminSectionPanels: $$(".admin-section-panel"),
+  adminSectionTabs: $$(".admin-section-tab"),
   bulkDaysInput: $("#bulkDaysInput"),
   bulkAddDaysButton: $("#bulkAddDaysButton"),
   bulkSubtractDaysButton: $("#bulkSubtractDaysButton"),
@@ -124,6 +127,10 @@ const elements = {
   pkgValidity: $("#pkgValidity"),
   customValidityWrap: $("#customValidityWrap"),
   pkgCustomDays: $("#pkgCustomDays"),
+  pkgDayAdjustWrap: $("#pkgDayAdjustWrap"),
+  pkgDayAdjustInput: $("#pkgDayAdjustInput"),
+  pkgAddDaysButton: $("#pkgAddDaysButton"),
+  pkgSubtractDaysButton: $("#pkgSubtractDaysButton"),
   pkgStatusInput: $("#pkgStatusInput"),
   pkgSerial: $("#pkgSerial"),
   pkgDeviceName: $("#pkgDeviceName"),
@@ -384,7 +391,9 @@ function normalizeData(data) {
       deviceName: pkg.deviceName || "Registered Device",
       legalInfo: pkg.legalInfo || "Legal and regulatory access details are assigned by the admin.",
       packageDetails: pkg.packageDetails || "Package details are assigned by the admin.",
-      loadingMinutes: getFinalLoadingMinutes(pkg)
+      loadingMinutes: getFinalLoadingMinutes(pkg),
+      customDays: pkg.validityType === "permanent" ? 0 : pkg.customDays,
+      expiresAt: pkg.validityType === "permanent" ? null : pkg.expiresAt
     }))
   };
 }
@@ -628,14 +637,85 @@ function getActivePackage() {
   return appData.packages.find((pkg) => pkg.id === activePackageId) || null;
 }
 
+function isPermanentPackage(pkg) {
+  return pkg?.validityType === "permanent";
+}
+
 function getValidityDays(pkg) {
+  if (isPermanentPackage(pkg)) {
+    return Number.POSITIVE_INFINITY;
+  }
   if (pkg.validityType === "custom") {
     return Math.max(1, Number(pkg.customDays) || 1);
   }
   return Math.max(1, Number(pkg.validityType) || 1);
 }
 
+function getValidityLabel(pkg) {
+  return isPermanentPackage(pkg) ? "Infinite Days" : `${getValidityDays(pkg)} day(s)`;
+}
+
+function getExpiryLabel(pkg) {
+  return isPermanentPackage(pkg) ? "Never expires" : formatDate(pkg.expiresAt);
+}
+
+function getSelectedValidityDays() {
+  const validityType = elements.pkgValidity.value;
+  if (validityType === "permanent") {
+    return Number.POSITIVE_INFINITY;
+  }
+  const customDays = Math.max(1, Math.trunc(Number(elements.pkgCustomDays.value) || 1));
+  return validityType === "custom" ? customDays : Math.max(1, Number(validityType) || 1);
+}
+
+function packageValidityChanged(existing, validityType, validityDays) {
+  if (!existing) return true;
+  const existingType = existing.validityType || "custom";
+  const existingDays = getValidityDays(existing);
+  return existingType !== validityType || existingDays !== validityDays;
+}
+
+function getDayAdjustmentValue(input = elements.pkgDayAdjustInput) {
+  return Math.max(1, Math.trunc(Number(input?.value) || 1));
+}
+
+function withAdjustedPackageDays(pkg, direction, days) {
+  if (isPermanentPackage(pkg)) {
+    return pkg;
+  }
+
+  const now = Date.now();
+  const delta = direction * days * DAY_MS;
+  const currentExpiry = Number(pkg.expiresAt) || now;
+  const baseExpiry = direction > 0 ? Math.max(currentExpiry, now) : currentExpiry;
+  const nextExpiry = Math.max(baseExpiry + delta, now - DAY_MS);
+  const remainingDays = Math.max(1, Math.ceil((nextExpiry - now) / DAY_MS));
+
+  return {
+    ...pkg,
+    validityType: "custom",
+    customDays: remainingDays,
+    expiresAt: nextExpiry
+  };
+}
+
+function refreshActivePackageAfterAdminChange(packageId) {
+  if (activePackageId !== packageId) return;
+  const activePackage = getActivePackage();
+  if (!activePackage) return;
+
+  if (isExpired(activePackage)) {
+    showLoginGate("Access expired");
+    return;
+  }
+
+  renderDashboardDetails(activePackage);
+}
+
 function isExpired(pkg) {
+  if (isPermanentPackage(pkg)) {
+    return false;
+  }
   return Date.now() > Number(pkg.expiresAt);
 }
 
@@ -825,6 +905,13 @@ function startSubscriptionCountdown(pkg) {
 
   const updateCountdown = () => {
     const currentPkg = getActivePackage() || pkg;
+    if (isPermanentPackage(currentPkg)) {
+      elements.subscriptionCountdown.textContent = "Infinite Days";
+      elements.subscriptionCountdownText.textContent = "Unlimited access is active for this package.";
+      elements.subscriptionCountdown.classList.remove("is-expired");
+      return;
+    }
+
     const remaining = Number(currentPkg.expiresAt) - Date.now();
     renderCountdownDisplay(elements.subscriptionCountdown, remaining);
     elements.subscriptionCountdownText.textContent =
@@ -916,7 +1003,7 @@ function renderDashboardDetails(pkg) {
   elements.dashboardTitle.textContent = "Welcome to the Hyper Regedit Web Portal";
   elements.dashboardSubtitle.textContent = `${pkg.name} access is ready. Click the button below to install.`;
   elements.packageName.textContent = pkg.name;
-  elements.packageExpiry.textContent = `${getValidityDays(pkg)} day(s), ${formatDate(pkg.expiresAt)}`;
+  elements.packageExpiry.textContent = `${getValidityLabel(pkg)}, ${getExpiryLabel(pkg)}`;
   elements.dashboardDeviceName.textContent = pkg.deviceName || "Registered Device";
   elements.deviceDetails.textContent = pkg.deviceSerial;
   elements.dashboardLegalInfo.textContent = pkg.legalInfo || "Legal and regulatory access details are assigned by the admin.";
@@ -1256,6 +1343,7 @@ function renderPackageList() {
       const status = isExpired(pkg) ? "Expired" : pkg.status;
       const featureTotal = pkg.featureIds.length;
       const lockStatus = pkg.deviceLockId ? "Device: Locked" : "Device: Unused";
+      const permanentDisabled = isPermanentPackage(pkg) ? "disabled" : "";
       return `
         <article class="access-row">
           <div>
@@ -1263,8 +1351,8 @@ function renderPackageList() {
             <p>Username: ${escapeHtml(cleanAccessValue(pkg.username) || "Not set")} | Password: ${escapeHtml(cleanAccessValue(pkg.password) || "Not set")} | Device: ${escapeHtml(pkg.deviceName || "Registered Device")} | Serial: ${escapeHtml(pkg.deviceSerial)}</p>
             <div class="access-meta">
               <span>${status}</span>
-              <span>${getValidityDays(pkg)} day(s)</span>
-              <span>Expires: ${formatDate(pkg.expiresAt)}</span>
+              <span>${getValidityLabel(pkg)}</span>
+              <span>Expires: ${getExpiryLabel(pkg)}</span>
               <span>${featureTotal} feature(s)</span>
               <span>${lockStatus}</span>
               <span>Web: ${escapeHtml(pkg.webAccessCode)}</span>
@@ -1272,6 +1360,12 @@ function renderPackageList() {
             </div>
           </div>
           <div class="list-actions">
+            <label class="inline-day-control">
+              Days
+              <input type="number" min="1" step="1" value="1" data-package-day-input="${pkg.id}" ${permanentDisabled}>
+            </label>
+            <button type="button" data-package-action="add-days" data-package-id="${pkg.id}" ${permanentDisabled}>Add Days</button>
+            <button type="button" data-package-action="remove-days" data-package-id="${pkg.id}" ${permanentDisabled}>Remove Days</button>
             <button type="button" data-package-action="edit" data-package-id="${pkg.id}">Edit</button>
             <button type="button" data-package-action="unlock" data-package-id="${pkg.id}" ${pkg.deviceLockId ? "" : "disabled"}>
               Reset Device Lock
@@ -1297,6 +1391,8 @@ function resetPackageForm() {
   elements.pkgActivationMode.value = "random";
   elements.pkgLoadingPreset.value = "60";
   elements.pkgCustomDays.value = "1";
+  elements.pkgDayAdjustInput.value = "1";
+  elements.pkgDayAdjustWrap.classList.add("hidden");
   elements.pkgCustomLoading.value = "60";
   elements.pkgUsername.value = "";
   elements.pkgDeviceName.value = "Registered Device";
@@ -1316,8 +1412,12 @@ function fillPackageForm(pkg) {
   elements.pkgName.value = pkg.name;
   elements.pkgUsername.value = pkg.username || makeDefaultUsername(pkg);
   elements.pkgPassword.value = cleanAccessValue(pkg.password);
-  elements.pkgValidity.value = pkg.validityType;
-  elements.pkgCustomDays.value = pkg.customDays || getValidityDays(pkg);
+  elements.pkgValidity.value = ["1", "7", "30", "custom", "permanent"].includes(String(pkg.validityType))
+    ? pkg.validityType
+    : "custom";
+  elements.pkgCustomDays.value = isPermanentPackage(pkg) ? "1" : pkg.customDays || getValidityDays(pkg);
+  elements.pkgDayAdjustInput.value = "1";
+  elements.pkgDayAdjustWrap.classList.remove("hidden");
   elements.pkgStatusInput.value = pkg.status;
   elements.pkgSerial.value = pkg.deviceSerial;
   elements.pkgDeviceName.value = pkg.deviceName || "Registered Device";
@@ -1337,7 +1437,7 @@ function fillPackageForm(pkg) {
   updateConditionalFields();
   setMessage(elements.packageFormMessage, "");
   setView("admin");
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  showAdminSection("packageManagementSection", true);
 }
 
 function savePackageFromForm(event) {
@@ -1399,8 +1499,7 @@ function savePackageFromForm(event) {
   }
 
   const validityType = elements.pkgValidity.value;
-  const customDays = Number(elements.pkgCustomDays.value) || 1;
-  const validityDays = validityType === "custom" ? customDays : Number(validityType);
+  const validityDays = getSelectedValidityDays();
   const loadingPreset = elements.pkgLoadingPreset.value;
   const loadingMinutes = getFinalLoadingMinutes({
     loadingPreset,
@@ -1409,12 +1508,20 @@ function savePackageFromForm(event) {
   const featureIds = $$('input[name="featurePick"]:checked').map((input) => input.value);
   const now = Date.now();
   const existingExpiresAt = Number(existing?.expiresAt);
+  const validityWasChanged = packageValidityChanged(existing, validityType, validityDays);
+  const packageValidityType = existing && !validityWasChanged ? existing.validityType || validityType : validityType;
   const packageExpiresAt =
-    existing && Number.isFinite(existingExpiresAt) && existingExpiresAt > 0
+    packageValidityType === "permanent"
+      ? null
+      : existing && !validityWasChanged && Number.isFinite(existingExpiresAt) && existingExpiresAt > 0
       ? existingExpiresAt
       : now + validityDays * DAY_MS;
-  const packageValidityType = existing ? existing.validityType || validityType : validityType;
-  const packageCustomDays = existing ? existing.customDays || getValidityDays(existing) : validityDays;
+  const packageCustomDays =
+    packageValidityType === "permanent"
+      ? 0
+      : existing && !validityWasChanged
+      ? existing.customDays || getValidityDays(existing)
+      : validityDays;
 
   const packageData = {
     id,
@@ -1452,13 +1559,38 @@ function savePackageFromForm(event) {
   saveData();
   renderAdmin();
   if (activePackageId === id) {
-    const activePackage = getActivePackage();
-    if (activePackage) renderDashboardDetails(activePackage);
+    refreshActivePackageAfterAdminChange(id);
   }
   resetPackageForm();
   setMessage(
     elements.packageFormMessage,
-    existing ? "Package updated. Expiry time kept unchanged." : "Package created.",
+    existing
+      ? validityWasChanged
+        ? "Package updated. Expiry time changed for this user."
+        : "Package updated. Expiry time kept unchanged."
+      : "Package created.",
+    "ok"
+  );
+}
+
+function adjustSinglePackageDays(packageId, direction, days) {
+  const pkg = appData.packages.find((item) => item.id === packageId);
+  if (!pkg) return;
+  if (isPermanentPackage(pkg)) {
+    setMessage(elements.packageFormMessage, `${pkg.name} already has Infinite Days. Change Validity first if you want limited days.`, "neutral");
+    return;
+  }
+
+  appData.packages = appData.packages.map((item) =>
+    item.id === packageId ? withAdjustedPackageDays(item, direction, days) : item
+  );
+
+  saveData();
+  renderAdmin();
+  refreshActivePackageAfterAdminChange(packageId);
+  setMessage(
+    elements.packageFormMessage,
+    `${direction > 0 ? "Added" : "Removed"} ${days} day(s) ${direction > 0 ? "to" : "from"} ${pkg.name}.`,
     "ok"
   );
 }
@@ -1482,6 +1614,7 @@ function fillFeatureForm(feature) {
   elements.featurePhoto.value = "";
   elements.featureDescription.value = feature.description || "";
   elements.featureStatus.value = feature.status;
+  showAdminSection("featureManagementSection", true);
   setMessage(elements.featureFormMessage, "");
 }
 
@@ -1523,11 +1656,36 @@ async function saveFeatureFromForm(event) {
   setMessage(elements.featureFormMessage, existing ? "Feature updated." : "Feature added.", "ok");
 }
 
+function showAdminSection(sectionId = activeAdminSectionId, shouldScroll = false) {
+  const nextSectionId = elements.adminSectionPanels.some((section) => section.id === sectionId)
+    ? sectionId
+    : "featureManagementSection";
+
+  activeAdminSectionId = nextSectionId;
+
+  elements.adminSectionPanels.forEach((section) => {
+    const isActive = section.id === nextSectionId;
+    section.classList.toggle("is-active", isActive);
+    section.setAttribute("aria-hidden", isActive ? "false" : "true");
+  });
+
+  elements.adminSectionTabs.forEach((button) => {
+    const isActive = button.dataset.adminSection === nextSectionId;
+    button.classList.toggle("is-active", isActive);
+    button.setAttribute("aria-pressed", isActive ? "true" : "false");
+  });
+
+  if (shouldScroll) {
+    document.getElementById(nextSectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
 function renderAdmin() {
   renderAdminSettings();
   renderFeaturePicker($$('input[name="featurePick"]:checked').map((input) => input.value));
   renderFeatureList();
   renderPackageList();
+  showAdminSection(activeAdminSectionId, false);
 }
 
 function renderAdminSettings() {
@@ -1566,27 +1724,19 @@ function saveAdminSettings(event) {
 
 function adjustAllSubscriptionDays(direction) {
   const days = Math.max(1, Math.trunc(Number(elements.bulkDaysInput.value) || 1));
+  const adjustablePackages = appData.packages.filter((pkg) => !isPermanentPackage(pkg));
 
   if (!appData.packages.length) {
     setMessage(elements.bulkDayMessage, "No subscription packages found.", "neutral");
     return;
   }
 
-  const now = Date.now();
-  const delta = direction * days * DAY_MS;
-  appData.packages = appData.packages.map((pkg) => {
-    const currentExpiry = Number(pkg.expiresAt) || now;
-    const baseExpiry = direction > 0 ? Math.max(currentExpiry, now) : currentExpiry;
-    const nextExpiry = Math.max(baseExpiry + delta, now - DAY_MS);
-    const remainingDays = Math.max(1, Math.ceil((nextExpiry - now) / DAY_MS));
+  if (!adjustablePackages.length) {
+    setMessage(elements.bulkDayMessage, "All packages are permanent. No limited subscriptions to update.", "neutral");
+    return;
+  }
 
-    return {
-      ...pkg,
-      validityType: "custom",
-      customDays: remainingDays,
-      expiresAt: nextExpiry
-    };
-  });
+  appData.packages = appData.packages.map((pkg) => withAdjustedPackageDays(pkg, direction, days));
 
   saveData();
   renderPackageList();
@@ -1596,14 +1746,15 @@ function adjustAllSubscriptionDays(direction) {
   setMessage(
     elements.bulkDayMessage,
     `${direction > 0 ? "Added" : "Removed"} ${days} day(s) ${direction > 0 ? "to" : "from"} ${
-      appData.packages.length
-    } subscription(s).`,
+      adjustablePackages.length
+    } limited subscription(s). Permanent packages were kept unlimited.`,
     "ok"
   );
 }
 
 function updateConditionalFields() {
   elements.customValidityWrap.classList.toggle("hidden", elements.pkgValidity.value !== "custom");
+  elements.pkgDayAdjustWrap.classList.toggle("hidden", !elements.packageId.value || elements.pkgValidity.value === "permanent");
   elements.customLoadingWrap.classList.toggle("hidden", elements.pkgLoadingPreset.value !== "custom");
 }
 
@@ -2041,8 +2192,19 @@ elements.certificateForm.addEventListener("submit", async (event) => {
 
 elements.restartFlowButton.addEventListener("click", resetInstallFlow);
 elements.adminSettingsForm.addEventListener("submit", saveAdminSettings);
+elements.adminSectionTabs.forEach((button) => {
+  button.addEventListener("click", () => showAdminSection(button.dataset.adminSection, true));
+});
 elements.bulkAddDaysButton.addEventListener("click", () => adjustAllSubscriptionDays(1));
 elements.bulkSubtractDaysButton.addEventListener("click", () => adjustAllSubscriptionDays(-1));
+elements.pkgAddDaysButton.addEventListener("click", () => {
+  if (!elements.packageId.value) return;
+  adjustSinglePackageDays(elements.packageId.value, 1, getDayAdjustmentValue());
+});
+elements.pkgSubtractDaysButton.addEventListener("click", () => {
+  if (!elements.packageId.value) return;
+  adjustSinglePackageDays(elements.packageId.value, -1, getDayAdjustmentValue());
+});
 elements.packageForm.addEventListener("submit", savePackageFromForm);
 elements.featureForm.addEventListener("submit", saveFeatureFromForm);
 elements.clearPackageFormButton.addEventListener("click", resetPackageForm);
@@ -2096,6 +2258,13 @@ elements.packageList.addEventListener("click", async (event) => {
 
   if (button.dataset.packageAction === "edit") {
     fillPackageForm(pkg);
+  }
+
+  if (button.dataset.packageAction === "add-days" || button.dataset.packageAction === "remove-days") {
+    const input = button.closest(".access-row")?.querySelector("[data-package-day-input]");
+    const direction = button.dataset.packageAction === "add-days" ? 1 : -1;
+    adjustSinglePackageDays(pkg.id, direction, getDayAdjustmentValue(input));
+    return;
   }
 
   if (button.dataset.packageAction === "toggle") {

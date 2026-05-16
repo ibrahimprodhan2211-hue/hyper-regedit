@@ -31,3 +31,11 @@ Sample login keys:
 - 30 day user: `ultimate30` / `KEY-30DAY-2026`
 
 With Neon connected, admin settings, packages, features, and device locks are saved in Neon and will show the same data from any phone/browser.
+
+Admin validity controls:
+
+- Bulk Subscription Days adds/removes days from every package.
+- Active Package List has per-package Days, Add Days, and Remove Days controls.
+- Editing a package keeps expiry unchanged unless the Validity value is changed or days are added/removed.
+- Admin Menu shows one section at a time: Feature Management, Active Package List, Package Management, Subscription Days, or Admin Contact.
+- Package Validity includes Permanent / Unlimited. Permanent users show Infinite Days and never expire until the admin changes the package validity.

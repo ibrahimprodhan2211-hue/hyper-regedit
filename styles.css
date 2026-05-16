@@ -2106,6 +2106,27 @@ button.is-loading::before {
   display: contents;
 }
 
+.view.active#adminView .admin-section-panel {
+  display: none;
+}
+
+.view.active#adminView .admin-section-panel.is-active {
+  display: block;
+  animation: adminSectionIn 220ms ease-out both;
+}
+
+@keyframes adminSectionIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 #featureManagementSection {
   order: 3;
 }
@@ -2118,8 +2139,12 @@ button.is-loading::before {
   order: 5;
 }
 
-#adminContactSection {
+#subscriptionDaysSection {
   order: 6;
+}
+
+#adminContactSection {
+  order: 7;
 }
 
 .admin-section-panel {
@@ -2147,11 +2172,11 @@ button.is-loading::before {
 
 .admin-section-nav {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 10px;
 }
 
-.admin-section-nav a {
+.admin-section-tab {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2165,13 +2190,22 @@ button.is-loading::before {
   font-weight: 900;
   text-align: center;
   text-decoration: none;
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease, color 160ms ease, box-shadow 160ms ease;
 }
 
-.admin-section-nav a:hover,
-.admin-section-nav a:focus-visible {
+.admin-section-tab:hover,
+.admin-section-tab:focus-visible,
+.admin-section-tab.is-active {
   color: #ffffff;
   background: var(--ink);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
   outline: none;
+}
+
+.admin-section-tab:hover,
+.admin-section-tab:focus-visible {
+  transform: translateY(-1px);
 }
 
 .bulk-subscription-tool {
@@ -2197,6 +2231,43 @@ button.is-loading::before {
 .bulk-subscription-tool .form-message {
   grid-column: 1 / -1;
   margin-top: 0;
+}
+
+.package-day-adjust-form {
+  display: grid;
+  grid-template-columns: minmax(180px, 260px) minmax(260px, auto);
+  gap: 12px;
+  align-items: end;
+  padding: 14px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.package-day-adjust-form label {
+  margin: 0;
+}
+
+.inline-day-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 10px;
+  color: var(--muted);
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.inline-day-control input {
+  width: 72px;
+  min-height: 26px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  font-size: 0.82rem;
 }
 
 .stacked-form {
