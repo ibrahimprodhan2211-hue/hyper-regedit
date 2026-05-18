@@ -1939,6 +1939,12 @@ elements.contactAdminLoginButton?.addEventListener("click", openSelectedAdminCon
 
 elements.loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
+  const submitButton = event.submitter || elements.loginForm.querySelector(".login-submit");
+
+  if (submitButton?.classList.contains("is-loading")) {
+    return;
+  }
+
   const username = elements.loginUsername.value.trim();
   const password = elements.loginPassword.value.trim();
 
@@ -1947,8 +1953,32 @@ elements.loginForm.addEventListener("submit", async (event) => {
     return;
   }
 
+  const originalButtonHtml = submitButton?.innerHTML;
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.classList.add("is-loading");
+    submitButton.innerHTML = "<span></span>CHECKING";
+  }
+
+  setMessage(elements.loginMessage, "Checking username...", "neutral");
+  await wait(550);
+  setMessage(elements.loginMessage, "Checking password...", "neutral");
+  await wait(650);
+  setMessage(elements.loginMessage, "Verifying access...", "neutral");
+  await wait(450);
+
+  const resetLoginButton = () => {
+    if (!submitButton) return;
+    submitButton.disabled = false;
+    submitButton.classList.remove("is-loading");
+    submitButton.innerHTML = originalButtonHtml;
+  };
+
   const handledByServer = await loginWithServer(username, password);
-  if (handledByServer) return;
+  if (handledByServer) {
+    resetLoginButton();
+    return;
+  }
 
   const adminUsername = String(appData.settings?.adminUsername || "admin").trim();
   const adminPassword = String(appData.settings?.adminPassword ?? DEFAULT_ADMIN_PASSWORD).trim();
@@ -1964,27 +1994,32 @@ elements.loginForm.addEventListener("submit", async (event) => {
     elements.dashboardView.classList.add("hidden");
     setMessage(elements.loginMessage, "");
     setView("admin");
+    resetLoginButton();
     return;
   }
 
   const pkg = findLoginPackage(username, password);
 
   if (!pkg) {
+    resetLoginButton();
     setMessage(elements.loginMessage, "Incorrect username or password");
     return;
   }
 
   if (pkg.status !== "Active") {
+    resetLoginButton();
     setMessage(elements.loginMessage, "Access disabled");
     return;
   }
 
   if (isExpired(pkg)) {
+    resetLoginButton();
     setMessage(elements.loginMessage, "Access expired");
     return;
   }
 
   if (pkg.deviceLockId && pkg.deviceLockId !== deviceId) {
+    resetLoginButton();
     setMessage(elements.loginMessage, "Already used on another device");
     return;
   }
@@ -1997,6 +2032,7 @@ elements.loginForm.addEventListener("submit", async (event) => {
 
   activePackageId = pkg.id;
   setMessage(elements.loginMessage, "");
+  resetLoginButton();
   renderDashboard(pkg);
 });
 
