@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Access Activation Console</title>
-    <link rel="stylesheet" href="styles.css?v=coded-login-perfect-final-20260518">
+    <link rel="stylesheet" href="styles.css?v=coded-login-soft-glow-20260518">
     <style>
       html.login-active,
       body.login-active {
@@ -5683,6 +5683,503 @@
         }
       }
     </style>
+    <style id="hyper-login-polish-show-full">
+      html.login-active,
+      body.login-active {
+        width: 100vw !important;
+        min-width: 100vw !important;
+        height: 100vh !important;
+        height: 100svh !important;
+        height: 100dvh !important;
+        min-height: 100dvh !important;
+        overflow: hidden !important;
+        background:
+          radial-gradient(circle at 50% 10%, rgba(118, 25, 187, 0.7), transparent 32%),
+          radial-gradient(circle at 50% 88%, rgba(102, 31, 179, 0.44), transparent 42%),
+          linear-gradient(180deg, #020007 0%, #070012 52%, #10001d 100%) !important;
+      }
+
+      body.login-active #loginView.hyper-login {
+        position: fixed !important;
+        inset: 0 !important;
+        width: 100vw !important;
+        height: 100dvh !important;
+        min-height: 100dvh !important;
+        max-height: 100dvh !important;
+        overflow: hidden !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: max(4px, env(safe-area-inset-top)) 10px max(24px, env(safe-area-inset-bottom)) !important;
+        background:
+          linear-gradient(90deg, transparent 0 9%, rgba(146, 41, 255, 0.24) 9.2%, transparent 9.6% 90.4%, rgba(146, 41, 255, 0.24) 90.8%, transparent 91%),
+          repeating-linear-gradient(90deg, rgba(130, 52, 255, 0.14) 0 1px, transparent 1px 100px),
+          repeating-linear-gradient(180deg, rgba(146, 47, 255, 0.1) 0 1px, transparent 1px 88px),
+          radial-gradient(circle at 50% 18%, rgba(161, 61, 255, 0.55), transparent 32%),
+          linear-gradient(180deg, #030006 0%, #090011 57%, #150022 100%) !important;
+      }
+
+      body.login-active #loginView.hyper-login::after {
+        display: block !important;
+        background:
+          linear-gradient(180deg, transparent 0 72%, rgba(127, 49, 255, 0.13) 72.5% 100%),
+          repeating-linear-gradient(90deg, transparent 0 84px, rgba(161, 67, 255, 0.24) 85px, transparent 87px),
+          repeating-linear-gradient(180deg, transparent 0 32px, rgba(161, 67, 255, 0.16) 33px, transparent 35px) !important;
+        opacity: 0.85 !important;
+      }
+
+      body.login-active .floor-grid {
+        display: block !important;
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        height: 22dvh !important;
+        min-height: 142px !important;
+        opacity: 0.78 !important;
+        background:
+          linear-gradient(rgba(166, 69, 255, 0.22) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(166, 69, 255, 0.22) 1px, transparent 1px),
+          linear-gradient(180deg, transparent, rgba(118, 33, 214, 0.32)) !important;
+        background-size: 100% 34px, 82px 100%, 100% 100% !important;
+        transform: perspective(280px) rotateX(58deg) translateY(38%) !important;
+        transform-origin: bottom !important;
+      }
+
+      body.login-active .hyper-logo {
+        position: relative !important;
+        display: grid !important;
+        place-items: center !important;
+        width: clamp(118px, 14.5dvh, 164px) !important;
+        height: clamp(74px, 9.4dvh, 104px) !important;
+        overflow: visible !important;
+        filter:
+          drop-shadow(0 0 12px rgba(184, 78, 255, 0.95))
+          drop-shadow(0 0 34px rgba(118, 21, 215, 0.75)) !important;
+        animation: hyperLogoPulse 2.8s ease-in-out infinite !important;
+      }
+
+      body.login-active .hyper-logo::before {
+        content: "" !important;
+        position: absolute !important;
+        display: block !important;
+        width: 118% !important;
+        height: 62% !important;
+        inset: auto !important;
+        border: 3px solid rgba(197, 93, 255, 0.92) !important;
+        border-left-color: transparent !important;
+        border-bottom-color: rgba(255, 255, 255, 0.34) !important;
+        border-radius: 50% !important;
+        background: transparent !important;
+        transform: rotate(-19deg) !important;
+        box-shadow: 0 0 22px rgba(183, 72, 255, 0.9), inset 0 0 18px rgba(142, 38, 255, 0.28) !important;
+      }
+
+      body.login-active .hyper-logo::after {
+        content: "" !important;
+        position: absolute !important;
+        display: block !important;
+        right: -10px !important;
+        top: 18px !important;
+        width: 42px !important;
+        height: 34px !important;
+        inset: auto !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background:
+          linear-gradient(135deg, rgba(255, 255, 255, 0.84), rgba(159, 74, 255, 0.2) 46%, rgba(55, 12, 111, 0.72) 47%),
+          linear-gradient(45deg, rgba(177, 65, 255, 0.92), rgba(48, 11, 93, 0.86)) !important;
+        clip-path: polygon(16% 0, 88% 0, 100% 18%, 52% 100%, 0 100%, 48% 18%) !important;
+        opacity: 0.9 !important;
+        box-shadow: 0 0 16px rgba(182, 74, 255, 0.9) !important;
+      }
+
+      body.login-active .hyper-logo span {
+        position: relative !important;
+        z-index: 3 !important;
+        display: block !important;
+        font-family: Impact, "Arial Black", system-ui, sans-serif !important;
+        font-size: clamp(3.5rem, 8.4dvh, 5.35rem) !important;
+        line-height: 0.86 !important;
+        letter-spacing: 0 !important;
+        color: transparent !important;
+        background: linear-gradient(150deg, #ffffff 0 16%, #8b8b99 26%, #090912 48%, #a940ff 70%, #ffffff 100%) !important;
+        background-clip: text !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        text-shadow:
+          0 0 10px rgba(255, 255, 255, 0.55),
+          0 0 25px rgba(182, 73, 255, 0.92),
+          0 0 54px rgba(118, 25, 220, 0.82) !important;
+        transform: skewX(-10deg) scaleX(1.16) !important;
+      }
+
+      @keyframes hyperLogoPulse {
+        0%, 100% { filter: drop-shadow(0 0 12px rgba(184, 78, 255, 0.85)) drop-shadow(0 0 28px rgba(118, 21, 215, 0.66)); }
+        50% { filter: drop-shadow(0 0 18px rgba(224, 157, 255, 1)) drop-shadow(0 0 46px rgba(142, 42, 255, 0.92)); }
+      }
+
+      body.login-active #loginForm > .password-shell:not(.username-shell) > .input-lock {
+        width: 26px !important;
+        height: 27px !important;
+        left: 15px !important;
+      }
+
+      body.login-active #loginForm > .password-shell:not(.username-shell) > .input-lock::before {
+        left: 50% !important;
+        top: 0 !important;
+        width: 14px !important;
+        height: 15px !important;
+        border: 2.4px solid #d3aaff !important;
+        border-bottom: 0 !important;
+        border-radius: 12px 12px 0 0 !important;
+        background: transparent !important;
+        transform: translateX(-50%) !important;
+        box-shadow: 0 0 10px rgba(207, 151, 255, 0.9) !important;
+      }
+
+      body.login-active #loginForm > .password-shell:not(.username-shell) > .input-lock::after {
+        left: 50% !important;
+        top: 13px !important;
+        width: 20px !important;
+        height: 14px !important;
+        border: 2.4px solid #d3aaff !important;
+        border-radius: 5px !important;
+        background:
+          radial-gradient(circle at 50% 42%, #f2deff 0 2px, transparent 2.5px),
+          linear-gradient(180deg, rgba(211, 170, 255, 0.18), rgba(123, 44, 255, 0.06)) !important;
+        transform: translateX(-50%) !important;
+        box-shadow: 0 0 12px rgba(207, 151, 255, 0.9), inset 0 0 8px rgba(207, 151, 255, 0.2) !important;
+      }
+
+      body.login-active #loginForm > .password-shell > .password-toggle {
+        right: 13px !important;
+        width: auto !important;
+        min-width: 46px !important;
+        height: 28px !important;
+        min-height: 28px !important;
+        padding: 0 9px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        color: #efc9ff !important;
+        -webkit-text-fill-color: #efc9ff !important;
+        font-size: 0.66rem !important;
+        font-weight: 900 !important;
+        line-height: 1 !important;
+        letter-spacing: 0.08em !important;
+        text-transform: uppercase !important;
+        background: linear-gradient(180deg, rgba(115, 35, 184, 0.34), rgba(25, 8, 51, 0.64)) !important;
+        border: 1px solid rgba(206, 103, 255, 0.62) !important;
+        border-radius: 999px !important;
+        box-shadow: 0 0 12px rgba(190, 66, 255, 0.45), inset 0 0 10px rgba(201, 92, 255, 0.16) !important;
+      }
+
+      body.login-active #loginForm > .password-shell > .password-toggle::before,
+      body.login-active #loginForm > .password-shell > .password-toggle::after {
+        display: none !important;
+        content: none !important;
+      }
+
+      body.login-active .login-card-trust {
+        gap: 7px !important;
+        margin-top: clamp(8px, 1.15dvh, 12px) !important;
+      }
+
+      body.login-active .login-card-trust span {
+        min-height: 32px !important;
+        padding: 6px 7px !important;
+        border-radius: 9px !important;
+        color: rgba(255, 255, 255, 0.94) !important;
+        background: linear-gradient(180deg, rgba(25, 8, 55, 0.88), rgba(8, 2, 22, 0.92)) !important;
+        border: 1px solid rgba(179, 81, 255, 0.48) !important;
+        box-shadow: 0 0 13px rgba(159, 55, 255, 0.28), inset 0 0 11px rgba(179, 81, 255, 0.1) !important;
+        font-size: clamp(0.48rem, 1.02dvh, 0.63rem) !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.04em !important;
+      }
+
+      body.login-active .login-card-trust span::before {
+        display: none !important;
+        content: none !important;
+      }
+
+      body.login-active .login-card-trust .trust-lock::after,
+      body.login-active .login-card-trust .trust-shield::after {
+        content: "" !important;
+        display: inline-block !important;
+        flex: 0 0 auto !important;
+        width: 5px !important;
+        height: 5px !important;
+        margin-left: 5px !important;
+        border-radius: 50% !important;
+        background: #c974ff !important;
+        box-shadow: 0 0 9px rgba(201, 116, 255, 0.86) !important;
+      }
+
+      body.login-active .hyper-copyright {
+        bottom: max(5px, env(safe-area-inset-bottom)) !important;
+        color: rgba(245, 232, 255, 0.88) !important;
+        text-shadow: 0 0 12px rgba(173, 72, 255, 0.62) !important;
+      }
+
+      @media (max-width: 430px), (max-height: 760px) {
+        body.login-active #loginView.hyper-login {
+          padding: max(2px, env(safe-area-inset-top)) 6px max(20px, env(safe-area-inset-bottom)) !important;
+          align-items: center !important;
+        }
+
+        body.login-active .cyber-frame {
+          width: min(415px, 95vw) !important;
+          max-height: calc(100dvh - 38px) !important;
+          gap: 5px !important;
+          transform: translateY(-1.2dvh) !important;
+        }
+
+        body.login-active .hyper-logo {
+          width: clamp(96px, 11.5dvh, 126px) !important;
+          height: clamp(58px, 7.4dvh, 76px) !important;
+          margin-bottom: 1px !important;
+        }
+
+        body.login-active .hyper-logo::after {
+          right: -8px !important;
+          top: 14px !important;
+          width: 34px !important;
+          height: 28px !important;
+        }
+
+        body.login-active .hyper-logo span {
+          font-size: clamp(3rem, 6.6dvh, 3.95rem) !important;
+        }
+
+        body.login-active .hyper-hero h2 {
+          font-size: clamp(1.68rem, 3.9dvh, 2.08rem) !important;
+        }
+
+        body.login-active .hyper-hero p {
+          font-size: clamp(0.49rem, 1.08dvh, 0.6rem) !important;
+        }
+
+        body.login-active .hyper-card.login-panel {
+          padding: 13px 12px 10px !important;
+        }
+
+        body.login-active #loginForm > .password-shell,
+        body.login-active #loginForm > .password-shell.username-shell {
+          height: 48px !important;
+          min-height: 48px !important;
+        }
+
+        body.login-active #loginForm > .password-shell > input {
+          min-height: 48px !important;
+          padding-left: 47px !important;
+          padding-right: 66px !important;
+          font-size: 0.84rem !important;
+        }
+
+        body.login-active #loginForm > .password-shell.username-shell > input {
+          padding-right: 14px !important;
+        }
+
+        body.login-active #loginForm > .password-shell:not(.username-shell) > .input-lock {
+          left: 12px !important;
+          width: 24px !important;
+          height: 25px !important;
+        }
+
+        body.login-active #loginForm > .password-shell > .password-toggle {
+          right: 8px !important;
+          min-width: 44px !important;
+          height: 26px !important;
+          min-height: 26px !important;
+          font-size: 0.6rem !important;
+        }
+
+        body.login-active .login-card-trust {
+          gap: 4px !important;
+        }
+
+        body.login-active .login-card-trust span {
+          min-height: 27px !important;
+          padding: 4px 3px !important;
+          font-size: 0.46rem !important;
+          letter-spacing: 0.02em !important;
+        }
+      }
+    </style>
+    <style id="hyper-login-logo-clarity-final">
+      body.login-active .hyper-logo {
+        width: clamp(126px, 14.5dvh, 174px) !important;
+        height: clamp(74px, 9dvh, 102px) !important;
+        filter: drop-shadow(0 0 12px rgba(189, 75, 255, 0.86)) drop-shadow(0 0 26px rgba(109, 20, 207, 0.72)) !important;
+        animation: hyperLogoClearPulse 3s ease-in-out infinite !important;
+      }
+
+      body.login-active .hyper-logo::before {
+        width: 112% !important;
+        height: 55% !important;
+        border-width: 2px !important;
+        border-color: rgba(181, 67, 255, 0.68) !important;
+        border-left-color: transparent !important;
+        border-bottom-color: rgba(255, 255, 255, 0.28) !important;
+        opacity: 0.86 !important;
+        box-shadow: 0 0 16px rgba(181, 67, 255, 0.62), inset 0 0 12px rgba(181, 67, 255, 0.18) !important;
+      }
+
+      body.login-active .hyper-logo::after {
+        display: none !important;
+        content: none !important;
+      }
+
+      body.login-active .hyper-logo span {
+        display: block !important;
+        font-family: Impact, Haettenschweiler, "Arial Black", system-ui, sans-serif !important;
+        font-size: clamp(4.15rem, 8.1dvh, 5.7rem) !important;
+        font-style: italic !important;
+        font-weight: 900 !important;
+        line-height: 0.82 !important;
+        color: transparent !important;
+        background:
+          linear-gradient(145deg, #ffffff 0 12%, #cfcfd8 20%, #11111a 47%, #0a0711 56%, #a62eff 72%, #ffffff 100%) !important;
+        background-clip: text !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        text-shadow:
+          0 0 5px rgba(255, 255, 255, 0.35),
+          0 0 14px rgba(187, 77, 255, 0.78),
+          0 0 26px rgba(118, 25, 220, 0.6) !important;
+        transform: skewX(-12deg) scaleX(1.22) !important;
+      }
+
+      @keyframes hyperLogoClearPulse {
+        0%, 100% { filter: drop-shadow(0 0 10px rgba(189, 75, 255, 0.76)) drop-shadow(0 0 22px rgba(109, 20, 207, 0.62)); }
+        50% { filter: drop-shadow(0 0 14px rgba(218, 142, 255, 0.94)) drop-shadow(0 0 32px rgba(141, 41, 255, 0.78)); }
+      }
+
+      @media (max-width: 430px), (max-height: 760px) {
+        body.login-active .hyper-logo {
+          width: clamp(104px, 11.2dvh, 134px) !important;
+          height: clamp(58px, 7.1dvh, 78px) !important;
+        }
+
+        body.login-active .hyper-logo span {
+          font-size: clamp(3.45rem, 6.4dvh, 4.18rem) !important;
+        }
+      }
+    </style>
+    <style id="hyper-login-soft-glow-final">
+      html.login-active,
+      body.login-active {
+        background:
+          radial-gradient(circle at 50% 10%, rgba(98, 24, 154, 0.42), transparent 34%),
+          radial-gradient(circle at 50% 88%, rgba(80, 24, 142, 0.28), transparent 44%),
+          linear-gradient(180deg, #020007 0%, #070012 54%, #10001d 100%) !important;
+      }
+
+      body.login-active #loginView.hyper-login {
+        background:
+          linear-gradient(90deg, transparent 0 9%, rgba(146, 41, 255, 0.14) 9.2%, transparent 9.6% 90.4%, rgba(146, 41, 255, 0.14) 90.8%, transparent 91%),
+          repeating-linear-gradient(90deg, rgba(130, 52, 255, 0.08) 0 1px, transparent 1px 100px),
+          repeating-linear-gradient(180deg, rgba(146, 47, 255, 0.06) 0 1px, transparent 1px 88px),
+          radial-gradient(circle at 50% 18%, rgba(137, 45, 222, 0.34), transparent 33%),
+          linear-gradient(180deg, #030006 0%, #090011 57%, #150022 100%) !important;
+      }
+
+      body.login-active #loginView.hyper-login::after {
+        opacity: 0.48 !important;
+      }
+
+      body.login-active .floor-grid {
+        opacity: 0.46 !important;
+        background:
+          linear-gradient(rgba(166, 69, 255, 0.13) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(166, 69, 255, 0.13) 1px, transparent 1px),
+          linear-gradient(180deg, transparent, rgba(118, 33, 214, 0.18)) !important;
+      }
+
+      body.login-active .coded-lightning,
+      body.login-active .data-rain,
+      body.login-active .cube-cluster {
+        opacity: 0.52 !important;
+      }
+
+      body.login-active .cube-cluster span {
+        box-shadow: 0 0 10px rgba(164, 48, 255, 0.42), inset 0 0 10px rgba(255, 255, 255, 0.12) !important;
+      }
+
+      body.login-active .data-rain span {
+        box-shadow: 0 0 8px rgba(178, 64, 255, 0.42) !important;
+      }
+
+      body.login-active .hyper-logo {
+        filter: drop-shadow(0 0 7px rgba(184, 78, 255, 0.52)) drop-shadow(0 0 16px rgba(109, 20, 207, 0.42)) !important;
+        animation: hyperLogoSoftPulse 3.4s ease-in-out infinite !important;
+      }
+
+      body.login-active .hyper-logo::before {
+        border-color: rgba(181, 67, 255, 0.46) !important;
+        border-left-color: transparent !important;
+        border-bottom-color: rgba(255, 255, 255, 0.2) !important;
+        box-shadow: 0 0 10px rgba(181, 67, 255, 0.38), inset 0 0 8px rgba(181, 67, 255, 0.12) !important;
+      }
+
+      body.login-active .hyper-logo span {
+        text-shadow:
+          0 0 4px rgba(255, 255, 255, 0.22),
+          0 0 9px rgba(187, 77, 255, 0.42),
+          0 0 18px rgba(118, 25, 220, 0.36) !important;
+      }
+
+      @keyframes hyperLogoSoftPulse {
+        0%, 100% { filter: drop-shadow(0 0 7px rgba(184, 78, 255, 0.46)) drop-shadow(0 0 15px rgba(109, 20, 207, 0.36)); }
+        50% { filter: drop-shadow(0 0 10px rgba(218, 142, 255, 0.58)) drop-shadow(0 0 22px rgba(141, 41, 255, 0.48)); }
+      }
+
+      body.login-active .hyper-card.login-panel {
+        box-shadow:
+          0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+          0 0 16px rgba(156, 49, 255, 0.42),
+          0 16px 42px rgba(0, 0, 0, 0.62) !important;
+      }
+
+      body.login-active #loginForm > .password-shell,
+      body.login-active #loginForm > .password-shell.username-shell {
+        box-shadow:
+          0 0 8px rgba(177, 48, 255, 0.32),
+          inset 0 0 12px rgba(129, 42, 255, 0.16) !important;
+      }
+
+      body.login-active #loginForm > .password-shell:not(.username-shell) > .input-lock::before {
+        box-shadow: 0 0 6px rgba(207, 151, 255, 0.48) !important;
+      }
+
+      body.login-active #loginForm > .password-shell:not(.username-shell) > .input-lock::after {
+        box-shadow: 0 0 7px rgba(207, 151, 255, 0.46), inset 0 0 6px rgba(207, 151, 255, 0.12) !important;
+      }
+
+      body.login-active #loginForm > .password-shell > .password-toggle {
+        box-shadow: 0 0 7px rgba(190, 66, 255, 0.28), inset 0 0 8px rgba(201, 92, 255, 0.12) !important;
+      }
+
+      body.login-active .login-submit {
+        box-shadow:
+          inset 0 0 16px rgba(221, 117, 255, 0.25),
+          0 0 16px rgba(175, 54, 255, 0.48) !important;
+      }
+
+      body.login-active .login-card-trust span {
+        box-shadow: 0 0 7px rgba(159, 55, 255, 0.18), inset 0 0 8px rgba(179, 81, 255, 0.08) !important;
+      }
+
+      body.login-active .login-card-trust .trust-lock::after,
+      body.login-active .login-card-trust .trust-shield::after {
+        box-shadow: 0 0 5px rgba(201, 116, 255, 0.48) !important;
+      }
+
+      body.login-active .hyper-copyright {
+        text-shadow: 0 0 7px rgba(173, 72, 255, 0.34) !important;
+      }
+    </style>
   </head>
   <body class="login-active">
     <div class="app-shell">
@@ -6330,6 +6827,6 @@
       </main>
     </div>
 
-    <script src="app.js?v=coded-login-perfect-final-20260518" defer></script>
+    <script src="app.js?v=coded-login-soft-glow-20260518" defer></script>
   </body>
 </html>
