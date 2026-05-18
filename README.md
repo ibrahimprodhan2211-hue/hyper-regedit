@@ -43,3 +43,4 @@ Admin validity controls:
 - Login page is rebuilt with code-only HTML/CSS visuals: no image URL backgrounds are used for the login UI.
 - Login submit now shows Checking username, Checking password, and Verifying access before opening the dashboard/admin panel.
 - Mobile login layout is polished for phone screens: top logo stays visible, middle lock badge is removed, input icons are aligned, and the secure/encrypted/protected row is compact.
+- Login screen is fixed to the full viewport, with smaller aligned username/password icons and a polished eye toggle.
