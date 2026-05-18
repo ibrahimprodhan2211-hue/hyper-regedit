@@ -5,7 +5,7 @@ const DEFAULT_ADMIN_PASSWORD = "ADMIN-2026";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const SERIAL_INSTALL_DURATION_MS = 2 * 60 * 1000;
 const MIN_FINAL_LOADING_MINUTES = 60;
-const MAX_FINAL_LOADING_MINUTES = 80;
+const MAX_FINAL_LOADING_MINUTES = 400;
 const ACTION_DELAY_MIN_MS = 2000;
 const ACTION_DELAY_MAX_MS = 5000;
 const FINAL_PHASE_MINUTES = 10;
@@ -19,8 +19,7 @@ const FINAL_PHASE_MESSAGES = [
   "Firewall and Firmware Initialization Checking",
   "Web Activation Checking",
   "All Function and Feature Checking",
-  "Device Module Final Checking",
-  "Access Stability Checking"
+  "Device Module Final Checking"
 ];
 
 const $ = (selector) => document.querySelector(selector);
@@ -1194,7 +1193,7 @@ function startFinalLoading() {
   const pkg = getActivePackage();
   const loadingMinutes = getFinalLoadingMinutes(pkg);
   const finalMessages = getFinalPhaseMessages(loadingMinutes);
-  const finalDuration = finalMessages.length * FINAL_PHASE_MINUTES * 60 * 1000;
+  const finalDuration = loadingMinutes * 60 * 1000;
 
   setInstallState("Final");
   setStage("final");
@@ -1212,7 +1211,7 @@ function startFinalLoading() {
     onDone: () => {
       setInstallState("Success");
       setStage("success");
-      elements.successMessage.textContent = pkg.finalMessage || "Installation Complete";
+      elements.successMessage.textContent = pkg.finalMessage || "⚠️ Installation Complete";
       $$("[data-step-dot]").forEach((dot) => {
         dot.classList.remove("active");
         dot.classList.add("complete");
@@ -1438,7 +1437,7 @@ function fillPackageForm(pkg) {
   elements.pkgPackageDetails.value = pkg.packageDetails || "";
   const loadingMinutes = getFinalLoadingMinutes(pkg);
   const savedLoadingPreset = String(pkg.loadingPreset || loadingMinutes);
-  elements.pkgLoadingPreset.value = ["60", "70", "80"].includes(savedLoadingPreset) ? savedLoadingPreset : "custom";
+  elements.pkgLoadingPreset.value = ["60", "70", "80", "100", "200", "300", "400"].includes(savedLoadingPreset) ? savedLoadingPreset : "custom";
   elements.pkgCustomLoading.value = loadingMinutes;
   elements.pkgFinalMessage.value = pkg.finalMessage || "Installation Complete";
   renderFeaturePicker(pkg.featureIds || []);
@@ -1796,7 +1795,7 @@ function getFinalLoadingMinutes(pkg) {
 function getFinalPhaseMessages(loadingMinutes) {
   const phaseCount = Math.min(
     FINAL_PHASE_MESSAGES.length,
-    Math.max(1, Math.ceil(loadingMinutes / FINAL_PHASE_MINUTES))
+    Math.max(1, Math.min(7, Math.ceil(loadingMinutes / FINAL_PHASE_MINUTES)))
   );
   return FINAL_PHASE_MESSAGES.slice(0, phaseCount);
 }

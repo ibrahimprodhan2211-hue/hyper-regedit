@@ -9,6 +9,9 @@ const DATA_FILE = process.env.DATA_FILE || path.join(ROOT_DIR, "data", "store.js
 const DATABASE_URL = process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.NEON_DATABASE_URL || "";
 const STORE_ID = "main";
 const DAY_MS = 24 * 60 * 60 * 1000;
+const MIN_FINAL_LOADING_MINUTES = 60;
+const MAX_FINAL_LOADING_MINUTES = 400;
+const FINAL_PHASE_MINUTES = 10;
 const DEFAULT_ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "ADMIN-2026";
 const ADMIN_SESSION_MS = 12 * 60 * 60 * 1000;
 const MAX_JSON_BODY_BYTES = 5_000_000;
@@ -187,7 +190,9 @@ function seedData() {
 
 function getFinalLoadingMinutes(pkg) {
   const raw = Number(pkg?.loadingMinutes || pkg?.loadingPreset || 60);
-  return Math.max(60, Math.min(80, Number.isFinite(raw) ? raw : 60));
+  const safeRaw = Number.isFinite(raw) ? raw : MIN_FINAL_LOADING_MINUTES;
+  const roundedBlock = Math.ceil(safeRaw / FINAL_PHASE_MINUTES) * FINAL_PHASE_MINUTES;
+  return Math.max(MIN_FINAL_LOADING_MINUTES, Math.min(MAX_FINAL_LOADING_MINUTES, roundedBlock));
 }
 
 function makeDefaultUsername(pkg = {}) {

@@ -6505,7 +6505,8 @@
                 </div>
 
                 <div id="successStage" class="install-stage success-stage hidden">
-                  <span class="success-icon" aria-hidden="true">OK</span>
+                  <span class="success-icon danger-success-icon" aria-hidden="true">!</span>
+                  <p class="success-warning-label">WARNING</p>
                   <h3 id="successMessage">Installation Complete</h3>
                   <button class="secondary-button" type="button" id="restartFlowButton">Run Again</button>
                 </div>
@@ -6740,16 +6741,20 @@
                       <option value="60">60 minutes</option>
                       <option value="70">70 minutes</option>
                       <option value="80">80 minutes</option>
+                      <option value="100">100 minutes</option>
+                      <option value="200">200 minutes</option>
+                      <option value="300">300 minutes</option>
+                      <option value="400">400 minutes</option>
                       <option value="custom">Custom</option>
                     </select>
                   </label>
                   <label id="customLoadingWrap" class="hidden">
                     Custom Minutes
-                    <input id="pkgCustomLoading" type="number" min="60" max="80" step="1" value="60">
+                    <input id="pkgCustomLoading" type="number" min="60" max="400" step="1" value="60">
                   </label>
                   <label>
-                    Final Success Message
-                    <input id="pkgFinalMessage" type="text" placeholder="Access Activated Successfully" required>
+                    Final Success Message (Emoji Allowed)
+                    <input id="pkgFinalMessage" type="text" placeholder="⚠️ Access Activated Successfully" required>
                   </label>
                 </div>
 
