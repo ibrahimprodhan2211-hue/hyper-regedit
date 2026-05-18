@@ -189,7 +189,11 @@ function seedData() {
 }
 
 function getFinalLoadingMinutes(pkg) {
-  const raw = Number(pkg?.loadingMinutes || pkg?.loadingPreset || 60);
+  const preset = String(pkg?.loadingPreset || "").trim();
+  const presetMinutes = preset && preset !== "custom" ? Number(preset) : NaN;
+  const raw = Number.isFinite(presetMinutes) && presetMinutes > 0
+    ? presetMinutes
+    : Number(pkg?.loadingMinutes || MIN_FINAL_LOADING_MINUTES);
   const safeRaw = Number.isFinite(raw) ? raw : MIN_FINAL_LOADING_MINUTES;
   const roundedBlock = Math.ceil(safeRaw / FINAL_PHASE_MINUTES) * FINAL_PHASE_MINUTES;
   return Math.max(MIN_FINAL_LOADING_MINUTES, Math.min(MAX_FINAL_LOADING_MINUTES, roundedBlock));

@@ -19,7 +19,8 @@ const FINAL_PHASE_MESSAGES = [
   "Firewall and Firmware Initialization Checking",
   "Web Activation Checking",
   "All Function and Feature Checking",
-  "Device Module Final Checking"
+  "Device Module Final Checking",
+  "Access Stability Checking"
 ];
 
 const $ = (selector) => document.querySelector(selector);
@@ -1787,17 +1788,17 @@ function renderFeatureIconMarkup(feature) {
 }
 
 function getFinalLoadingMinutes(pkg) {
-  const minutes = Number(pkg?.loadingMinutes) || Number(pkg?.loadingPreset) || MIN_FINAL_LOADING_MINUTES;
+  const preset = String(pkg?.loadingPreset || "").trim();
+  const presetMinutes = preset && preset !== "custom" ? Number(preset) : NaN;
+  const minutes = Number.isFinite(presetMinutes) && presetMinutes > 0
+    ? presetMinutes
+    : Number(pkg?.loadingMinutes) || MIN_FINAL_LOADING_MINUTES;
   const roundedBlock = Math.ceil(minutes / FINAL_PHASE_MINUTES) * FINAL_PHASE_MINUTES;
   return Math.min(MAX_FINAL_LOADING_MINUTES, Math.max(MIN_FINAL_LOADING_MINUTES, roundedBlock));
 }
 
 function getFinalPhaseMessages(loadingMinutes) {
-  const phaseCount = Math.min(
-    FINAL_PHASE_MESSAGES.length,
-    Math.max(1, Math.min(7, Math.ceil(loadingMinutes / FINAL_PHASE_MINUTES)))
-  );
-  return FINAL_PHASE_MESSAGES.slice(0, phaseCount);
+  return FINAL_PHASE_MESSAGES;
 }
 
 function isLinkContact(value) {
