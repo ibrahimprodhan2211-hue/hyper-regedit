@@ -40,3 +40,5 @@ Admin validity controls:
 - Admin Menu shows one section at a time: Feature Management, Active Package List, Package Management, Subscription Days, or Admin Contact.
 - Package Validity includes Permanent / Unlimited. Permanent users show Infinite Days and never expire until the admin changes the package validity.
 - Mobile admin view keeps one section visible at a time, and per-package day controls are full-width for phone screens.
+- Login page is rebuilt with code-only HTML/CSS visuals: no image URL backgrounds are used for the login UI.
+- Login submit now shows Checking username, Checking password, and Verifying access before opening the dashboard/admin panel.
