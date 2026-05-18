@@ -100,7 +100,9 @@ function seedData() {
       contactValue: "https://wa.me/8801000000000",
       contactWhatsapp: "https://wa.me/8801000000000",
       contactEmail: "support@example.com",
-      contactMode: "auto"
+      contactMode: "auto",
+      maintenanceMode: "off",
+      maintenanceMessage: "Website is under maintenance. Please try again later."
     },
     featureStateDefaultMode: "deactivated",
     userFeatureStates: {},
@@ -370,8 +372,18 @@ function publicSettings(settings = {}) {
     contactValue: settings.contactValue || "",
     contactWhatsapp: settings.contactWhatsapp || "",
     contactEmail: settings.contactEmail || "",
-    contactMode: settings.contactMode || "auto"
+    contactMode: settings.contactMode || "auto",
+    maintenanceMode: settings.maintenanceMode || "off",
+    maintenanceMessage: settings.maintenanceMessage || "Website is under maintenance. Please try again later."
   };
+}
+
+function isMaintenanceEnabled(settings = {}) {
+  return String(settings.maintenanceMode || "").trim().toLowerCase() === "on";
+}
+
+function getMaintenanceMessage(settings = {}) {
+  return String(settings.maintenanceMessage || "").trim() || "Website is under maintenance. Please try again later.";
 }
 
 function userPackage(pkg) {
@@ -500,6 +512,14 @@ async function handleApi(req, res, pathname) {
         });
       }
 
+      if (isMaintenanceEnabled(data.settings)) {
+        return sendJson(res, 503, {
+          message: getMaintenanceMessage(data.settings),
+          maintenance: true,
+          settings: publicSettings(data.settings)
+        });
+      }
+
       let pkg = findLoginPackage(data.packages, username, password);
       if (pkg && !data.packages.some((item) => item.id === pkg.id)) {
         data.packages.push(pkg);
@@ -533,6 +553,15 @@ async function handleApi(req, res, pathname) {
     const packageId = String(body.packageId || "").trim();
     const deviceId = String(body.deviceId || "").trim();
     const data = await readStore();
+
+    if (isMaintenanceEnabled(data.settings)) {
+      return sendJson(res, 503, {
+        message: getMaintenanceMessage(data.settings),
+        maintenance: true,
+        settings: publicSettings(data.settings)
+      });
+    }
+
     const pkg = data.packages.find((item) => item.id === packageId);
 
     if (!pkg) {

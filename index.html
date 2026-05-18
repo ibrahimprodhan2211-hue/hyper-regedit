@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Access Activation Console</title>
-    <link rel="stylesheet" href="styles.css?v=final-time-400-fix-20260518">
+    <link rel="stylesheet" href="styles.css?v=maintenance-mode-20260519">
     <style>
       html.login-active,
       body.login-active {
@@ -6233,6 +6233,14 @@
                   <p>Login to access your Hyper Regedit account</p>
                 </div>
 
+                <div class="maintenance-status-card operational" id="maintenanceStatusCard" aria-live="polite">
+                  <span class="maintenance-pulse" aria-hidden="true"></span>
+                  <div>
+                    <strong id="maintenanceStatusTitle">WEBSITE IS OPERATIONAL</strong>
+                    <p id="maintenanceStatusText">All login services are currently available.</p>
+                  </div>
+                </div>
+
                 <form id="loginForm" autocomplete="off">
                   <label class="login-field-label" for="loginUsername">EMAIL OR USERNAME</label>
                   <div class="password-shell username-shell">
@@ -6610,6 +6618,19 @@
                   </select>
                 </label>
               </div>
+              <div class="two-column">
+                <label>
+                  Maintenance Mode
+                  <select id="adminMaintenanceMode">
+                    <option value="off">Website is Operational</option>
+                    <option value="on">Maintenance On</option>
+                  </select>
+                </label>
+                <label>
+                  Maintenance Message
+                  <input id="adminMaintenanceMessage" type="text" placeholder="Website is under maintenance. Please try again later.">
+                </label>
+              </div>
               <div class="button-row">
                 <button class="primary-button" type="submit">Save Admin Settings</button>
                 <p class="form-message" id="adminSettingsMessage" role="alert"></p>
@@ -6832,6 +6853,6 @@
       </main>
     </div>
 
-    <script src="app.js?v=final-time-400-fix-20260518" defer></script>
+    <script src="app.js?v=maintenance-mode-20260519" defer></script>
   </body>
 </html>

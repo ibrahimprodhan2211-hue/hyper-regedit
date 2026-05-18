@@ -48,6 +48,9 @@ const elements = {
   loginPassword: $("#loginPassword"),
   togglePasswordButton: $("#togglePasswordButton"),
   contactAdminLoginButton: $("#contactAdminLoginButton"),
+  maintenanceStatusCard: $("#maintenanceStatusCard"),
+  maintenanceStatusTitle: $("#maintenanceStatusTitle"),
+  maintenanceStatusText: $("#maintenanceStatusText"),
   loginMessage: $("#loginMessage"),
   logoutButton: $("#logoutButton"),
   dashboardTitle: $("#dashboardTitle"),
@@ -109,6 +112,8 @@ const elements = {
   adminWhatsappContact: $("#adminWhatsappContact"),
   adminEmailContact: $("#adminEmailContact"),
   adminContactMode: $("#adminContactMode"),
+  adminMaintenanceMode: $("#adminMaintenanceMode"),
+  adminMaintenanceMessage: $("#adminMaintenanceMessage"),
   adminSettingsMessage: $("#adminSettingsMessage"),
   adminLogoutButton: $("#adminLogoutButton"),
   resetDemoButton: $("#resetDemoButton"),
@@ -220,7 +225,9 @@ function seedData() {
       contactValue: "https://wa.me/8801000000000",
       contactWhatsapp: "https://wa.me/8801000000000",
       contactEmail: "support@example.com",
-      contactMode: "auto"
+      contactMode: "auto",
+      maintenanceMode: "off",
+      maintenanceMessage: "Website is under maintenance. Please try again later."
     },
     featureStateDefaultMode: "deactivated",
     userFeatureStates: {},
@@ -323,6 +330,14 @@ function loadData() {
   } catch (error) {
     return seedData();
   }
+}
+
+function isMaintenanceEnabled(settings = appData.settings || {}) {
+  return String(settings.maintenanceMode || "").trim().toLowerCase() === "on";
+}
+
+function getMaintenanceMessage(settings = appData.settings || {}) {
+  return String(settings.maintenanceMessage || "").trim() || "Website is under maintenance. Please try again later.";
 }
 
 function makeDefaultUsername(pkg) {
@@ -486,6 +501,7 @@ async function loadPublicSettings() {
         ...payload.settings
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      updateMaintenanceStatus();
     }
   } catch (error) {
     if (isMissingApiError(error)) {
@@ -549,6 +565,7 @@ function applyServerUserPayload(payload = {}) {
       ...appData.settings,
       ...payload.settings
     };
+    updateMaintenanceStatus();
   }
 
   mergeServerFeatures(payload.features || []);
@@ -598,6 +615,14 @@ async function loginWithServer(username, password) {
     }
 
     if (error.status) {
+      if (error.payload?.settings) {
+        appData.settings = {
+          ...appData.settings,
+          ...error.payload.settings
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+        updateMaintenanceStatus();
+      }
       setMessage(elements.loginMessage, error.message || "Login failed");
       return true;
     }
@@ -816,6 +841,17 @@ function showAnimatedMessage(element, text, type = "ok") {
   element.classList.add("show");
 }
 
+function updateMaintenanceStatus() {
+  if (!elements.maintenanceStatusCard) return;
+  const enabled = isMaintenanceEnabled();
+  elements.maintenanceStatusCard.classList.toggle("maintenance", enabled);
+  elements.maintenanceStatusCard.classList.toggle("operational", !enabled);
+  elements.maintenanceStatusTitle.textContent = enabled ? "WEBSITE UNDER MAINTENANCE" : "WEBSITE IS OPERATIONAL";
+  elements.maintenanceStatusText.textContent = enabled
+    ? getMaintenanceMessage()
+    : "All login services are currently available.";
+}
+
 function setView(view) {
   if (view === "admin" && !adminAuthenticated) {
     showLoginGate("Enter admin password to open Admin Panel.");
@@ -856,6 +892,7 @@ function showLoginGate(message = "") {
     button.setAttribute("aria-selected", String(active));
   });
   setMessage(elements.loginMessage, message, message ? "neutral" : "error");
+  updateMaintenanceStatus();
   updatePageMode();
   elements.loginUsername.focus();
 }
@@ -897,6 +934,13 @@ async function refreshActivePackageFromServer() {
     }
 
     if (error.status) {
+      if (error.payload?.settings) {
+        appData.settings = {
+          ...appData.settings,
+          ...error.payload.settings
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      }
       showLoginGate(error.message || "Access expired");
     }
   }
@@ -1705,6 +1749,9 @@ function renderAdminSettings() {
   elements.adminWhatsappContact.value = settings.contactWhatsapp || (/wa\.me|whats\s*app|\+?\d[\d\s().-]{7,}/i.test(settings.contactValue || "") ? settings.contactValue || "" : "");
   elements.adminEmailContact.value = settings.contactEmail || (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(settings.contactValue || "") ? settings.contactValue || "" : "");
   elements.adminContactMode.value = settings.contactMode || "auto";
+  elements.adminMaintenanceMode.value = isMaintenanceEnabled(settings) ? "on" : "off";
+  elements.adminMaintenanceMessage.value = getMaintenanceMessage(settings);
+  updateMaintenanceStatus();
 }
 
 function saveAdminSettings(event) {
@@ -1724,9 +1771,12 @@ function saveAdminSettings(event) {
     contactValue: elements.adminContactValue.value.trim(),
     contactWhatsapp: elements.adminWhatsappContact.value.trim(),
     contactEmail: elements.adminEmailContact.value.trim(),
-    contactMode: elements.adminContactMode.value
+    contactMode: elements.adminContactMode.value,
+    maintenanceMode: elements.adminMaintenanceMode.value,
+    maintenanceMessage: elements.adminMaintenanceMessage.value.trim() || "Website is under maintenance. Please try again later."
   };
   saveData();
+  updateMaintenanceStatus();
   setMessage(elements.adminSettingsMessage, "Admin settings saved.", "ok");
 }
 
@@ -1995,6 +2045,13 @@ elements.loginForm.addEventListener("submit", async (event) => {
     setMessage(elements.loginMessage, "");
     setView("admin");
     resetLoginButton();
+    return;
+  }
+
+  if (isMaintenanceEnabled()) {
+    resetLoginButton();
+    updateMaintenanceStatus();
+    setMessage(elements.loginMessage, getMaintenanceMessage(), "neutral");
     return;
   }
 
