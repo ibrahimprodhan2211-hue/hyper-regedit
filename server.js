@@ -102,7 +102,7 @@ function seedData() {
       contactEmail: "support@example.com",
       contactMode: "auto",
       maintenanceMode: "off",
-      maintenanceMessage: "Website is under maintenance. Please try again later."
+      maintenanceMessage: "Hyper Regedit is under maintenance. Please try again later."
     },
     featureStateDefaultMode: "deactivated",
     userFeatureStates: {},
@@ -374,7 +374,7 @@ function publicSettings(settings = {}) {
     contactEmail: settings.contactEmail || "",
     contactMode: settings.contactMode || "auto",
     maintenanceMode: settings.maintenanceMode || "off",
-    maintenanceMessage: settings.maintenanceMessage || "Website is under maintenance. Please try again later."
+    maintenanceMessage: settings.maintenanceMessage || "Hyper Regedit is under maintenance. Please try again later."
   };
 }
 
@@ -383,7 +383,7 @@ function isMaintenanceEnabled(settings = {}) {
 }
 
 function getMaintenanceMessage(settings = {}) {
-  return String(settings.maintenanceMessage || "").trim() || "Website is under maintenance. Please try again later.";
+  return String(settings.maintenanceMessage || "").trim() || "Hyper Regedit is under maintenance. Please try again later.";
 }
 
 function userPackage(pkg) {

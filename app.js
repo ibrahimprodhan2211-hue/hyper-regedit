@@ -227,7 +227,7 @@ function seedData() {
       contactEmail: "support@example.com",
       contactMode: "auto",
       maintenanceMode: "off",
-      maintenanceMessage: "Website is under maintenance. Please try again later."
+      maintenanceMessage: "Hyper Regedit is under maintenance. Please try again later."
     },
     featureStateDefaultMode: "deactivated",
     userFeatureStates: {},
@@ -337,7 +337,7 @@ function isMaintenanceEnabled(settings = appData.settings || {}) {
 }
 
 function getMaintenanceMessage(settings = appData.settings || {}) {
-  return String(settings.maintenanceMessage || "").trim() || "Website is under maintenance. Please try again later.";
+  return String(settings.maintenanceMessage || "").trim() || "Hyper Regedit is under maintenance. Please try again later.";
 }
 
 function makeDefaultUsername(pkg) {
@@ -844,12 +844,15 @@ function showAnimatedMessage(element, text, type = "ok") {
 function updateMaintenanceStatus() {
   if (!elements.maintenanceStatusCard) return;
   const enabled = isMaintenanceEnabled();
+  elements.maintenanceStatusCard.hidden = !enabled;
   elements.maintenanceStatusCard.classList.toggle("maintenance", enabled);
-  elements.maintenanceStatusCard.classList.toggle("operational", !enabled);
-  elements.maintenanceStatusTitle.textContent = enabled ? "WEBSITE UNDER MAINTENANCE" : "WEBSITE IS OPERATIONAL";
-  elements.maintenanceStatusText.textContent = enabled
-    ? getMaintenanceMessage()
-    : "All login services are currently available.";
+  if (!enabled) {
+    elements.maintenanceStatusTitle.textContent = "";
+    elements.maintenanceStatusText.textContent = "";
+    return;
+  }
+  elements.maintenanceStatusTitle.textContent = "HYPER REGEDIT IS UNDER MAINTENANCE";
+  elements.maintenanceStatusText.textContent = getMaintenanceMessage();
 }
 
 function setView(view) {
@@ -1773,7 +1776,7 @@ function saveAdminSettings(event) {
     contactEmail: elements.adminEmailContact.value.trim(),
     contactMode: elements.adminContactMode.value,
     maintenanceMode: elements.adminMaintenanceMode.value,
-    maintenanceMessage: elements.adminMaintenanceMessage.value.trim() || "Website is under maintenance. Please try again later."
+    maintenanceMessage: elements.adminMaintenanceMessage.value.trim() || "Hyper Regedit is under maintenance. Please try again later."
   };
   saveData();
   updateMaintenanceStatus();
